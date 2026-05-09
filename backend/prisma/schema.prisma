@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  permissions Permission[]
+  users       User[]
+}
+
+model Permission {
+  id    String @id @default(uuid())
+  name  String @unique
+  roles Role[]
+}
+
+model Menu {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  items     MenuItem[]
+  createdAt DateTime   @default(now())
+}
+
+model MenuItem {
+  id        String     @id @default(uuid())
+  label     String
+  url       String?
+  parentId  String?
+  menuId    String
+  order     Int        @default(0)
+  parent    MenuItem?  @relation("MenuHierarchy", fields: [parentId], references: [id])
+  children  MenuItem[] @relation("MenuHierarchy")
+  menu      Menu       @relation(fields: [menuId], references: [id])
+}
+
+model Page {
+  id        String        @id @default(uuid())
+  slug      String        @unique
+  title     String
+  sections  PageSection[]
+  createdAt DateTime      @default(now())
+}
+
+model PageSection {
+  id          String   @id @default(uuid())
+  pageId      String
+  typeId      String
+  content     Json
+  order       Int      @default(0)
+  page        Page     @relation(fields: [pageId], references: [id])
+  sectionType SectionType @relation(fields: [typeId], references: [id])
+}
+
+model SectionType {
+  id          String        @id @default(uuid())
+  name        String        @unique // e.g. 'hero', 'about', 'gallery'
+  schemaJson  Json?
+  sections    PageSection[]
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  title       String
+  content     String?
+  link        String?
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+}
