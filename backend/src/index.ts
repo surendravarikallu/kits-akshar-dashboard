@@ -26,6 +26,22 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Root route to verify server is up
+app.get('/', (req, res) => {
+  res.send('KITS Akshar API is running.');
+});
+
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log('-------------------------------------------');
+  console.log(`🚀 KITS Akshar Backend Initialized`);
+  console.log(`📡 Listening on: http://localhost:${PORT}`);
+  console.log('-------------------------------------------');
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
 });
